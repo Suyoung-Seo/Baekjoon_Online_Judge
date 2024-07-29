@@ -3,6 +3,13 @@
 #include <queue>
 using namespace std;
 
+/*
+1. 0 검사 -> 없으면 0 출력 후 end
+2. 1 검사 -> 1의 위치들을 기억
+3. 각 1에 대하여 BFS 실행 (0에 대한 BFS) -> 0 검사 -> 없으면 BFS 실행 횟수 출력 후 end
+4. BFS 종료 후 0이 있으면 -1 출력 후 end
+*/
+
 int main()
 {
     ios::sync_with_stdio(false);
