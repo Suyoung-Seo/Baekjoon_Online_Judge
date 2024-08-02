@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <tuple>
 #include <queue>
 using namespace std;
 
@@ -12,64 +13,66 @@ using namespace std;
 
 int main()
 {
+    /*
     ios::sync_with_stdio(false);
     cin.tie(NULL);
-    cout.tie(NULL);
+    cout.tie(NULL);*/
 
-    int M, N;
-    cin >> M >> N;
+    int M, N, H;
+    cin >> M >> N >> H;
 
-    int **tomato = new int *[N];
-    for (int i = 0; i < N; i++)
+    int ***tomato = new int **[H];
+    for (int i = 0; i < H; i++)
     {
-        tomato[i] = new int[M];
-    }
-
-    for (int i = 0; i < N; i++)
-    {
-        for (int j = 0; j < M; j++)
+        tomato[i] = new int *[N];
+        for (int j = 0; j < N; j++)
         {
-            int temp;
-            cin >> temp;
+            tomato[i][j] = new int[M];
+            for (int k = 0; k < M; k++)
+            {
+                int temp;
+                cin >> temp;
 
-            tomato[i][j] = temp;
+                tomato[i][j][k] = temp;
+            }
         }
     }
 
     // 0 검사
     bool isZero = false;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < H && isZero == false; i++)
     {
-        for (int j = 0; j < M; j++)
+        for (int j = 0; j < N && isZero == false; j++)
         {
-            if (tomato[i][j] == 0)
+            for (int k = 0; k < M && isZero == false; k++)
             {
-                isZero = true;
-                break;
+                if (tomato[i][j][k] == 0)
+                {
+                    isZero = true;
+                }
             }
-        }
-        if (isZero)
-        {
-            break;
         }
     }
 
-    if (!isZero)
+    if (isZero == false)
     {
         cout << 0 << '\n';
         return 0;
     }
 
     // 1 검사
-    queue<pair<int, int>> q;
+    queue<tuple<int, int, int>> q;
 
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < H; i++)
     {
-        for (int j = 0; j < M; j++)
+        for (int j = 0; j < N; j++)
         {
-            if (tomato[i][j] == 1)
+            for (int k = 0; k < M; k++)
             {
-                q.push(make_pair(i, j));
+                if (tomato[i][j][k] == 1)
+                {
+                    q.push(make_tuple(i, j, k));
+                }
             }
         }
     }
@@ -78,42 +81,60 @@ int main()
     while (!q.empty())
     {
         // BFS 실행
-        pair<int, int> p = q.front();
+        tuple<int, int, int> t = q.front();
         q.pop();
 
-        if (p.first != 0)
+        if (get<0>(t) != 0)
         {
-            if (tomato[p.first - 1][p.second] == 0)
+            if (tomato[get<0>(t) - 1][get<1>(t)][get<2>(t)] == 0)
             {
-                tomato[p.first - 1][p.second] = tomato[p.first][p.second] + 1;
-                q.push(make_pair(p.first - 1, p.second));
+                tomato[get<0>(t) - 1][get<1>(t)][get<2>(t)] = tomato[get<0>(t)][get<1>(t)][get<2>(t)] + 1;
+                q.push(make_tuple(get<0>(t) - 1, get<1>(t), get<2>(t)));
             }
         }
 
-        if (p.second != 0)
+        if (get<0>(t) != H - 1)
         {
-            if (tomato[p.first][p.second - 1] == 0)
+            if (tomato[get<0>(t) + 1][get<1>(t)][get<2>(t)] == 0)
             {
-                tomato[p.first][p.second - 1] = tomato[p.first][p.second] + 1;
-                q.push(make_pair(p.first, p.second - 1));
+                tomato[get<0>(t) + 1][get<1>(t)][get<2>(t)] = tomato[get<0>(t)][get<1>(t)][get<2>(t)] + 1;
+                q.push(make_tuple(get<0>(t) + 1, get<1>(t), get<2>(t)));
             }
         }
 
-        if (p.first != N - 1)
+        if (get<1>(t) != 0)
         {
-            if (tomato[p.first + 1][p.second] == 0)
+            if (tomato[get<0>(t)][get<1>(t) - 1][get<2>(t)] == 0)
             {
-                tomato[p.first + 1][p.second] = tomato[p.first][p.second] + 1;
-                q.push(make_pair(p.first + 1, p.second));
+                tomato[get<0>(t)][get<1>(t) - 1][get<2>(t)] = tomato[get<0>(t)][get<1>(t)][get<2>(t)] + 1;
+                q.push(make_tuple(get<0>(t), get<1>(t) - 1, get<2>(t)));
             }
         }
 
-        if (p.second != M - 1)
+        if (get<1>(t) != N - 1)
         {
-            if (tomato[p.first][p.second + 1] == 0)
+            if (tomato[get<0>(t)][get<1>(t) + 1][get<2>(t)] == 0)
             {
-                tomato[p.first][p.second + 1] = tomato[p.first][p.second] + 1;
-                q.push(make_pair(p.first, p.second + 1));
+                tomato[get<0>(t)][get<1>(t) + 1][get<2>(t)] = tomato[get<0>(t)][get<1>(t)][get<2>(t)] + 1;
+                q.push(make_tuple(get<0>(t), get<1>(t) + 1, get<2>(t)));
+            }
+        }
+
+        if (get<2>(t) != 0)
+        {
+            if (tomato[get<0>(t)][get<1>(t)][get<2>(t) - 1] == 0)
+            {
+                tomato[get<0>(t)][get<1>(t)][get<2>(t) - 1] = tomato[get<0>(t)][get<1>(t)][get<2>(t)] + 1;
+                q.push(make_tuple(get<0>(t), get<1>(t), get<2>(t) - 1));
+            }
+        }
+
+        if (get<2>(t) != M - 1)
+        {
+            if (tomato[get<0>(t)][get<1>(t)][get<2>(t) + 1] == 0)
+            {
+                tomato[get<0>(t)][get<1>(t)][get<2>(t) + 1] = tomato[get<0>(t)][get<1>(t)][get<2>(t)] + 1;
+                q.push(make_tuple(get<0>(t), get<1>(t), get<2>(t) + 1));
             }
         }
     }
@@ -121,29 +142,26 @@ int main()
     // 0, 최댓값 검사
     isZero = false;
     int max = 0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < H && isZero == false; i++)
     {
-        for (int j = 0; j < M; j++)
+        for (int j = 0; j < N && isZero == false; j++)
         {
-            if (max < tomato[i][j])
+            for (int k = 0; k < M && isZero == false; k++)
             {
-                max = tomato[i][j];
-            }
+                if (max < tomato[i][j][k])
+                {
+                    max = tomato[i][j][k];
+                }
 
-            if (tomato[i][j] == 0)
-            {
-                isZero = true;
-                break;
+                if (tomato[i][j][k] == 0)
+                {
+                    isZero = true;
+                }
             }
-        }
-
-        if (isZero)
-        {
-            break;
         }
     }
 
-    if (isZero)
+    if (isZero == true)
     {
         cout << -1 << '\n';
     }
