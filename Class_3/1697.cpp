@@ -11,13 +11,8 @@ int main()
     int N, K;
     cin >> N >> K;
 
-    if (N == K)
-    {
-        cout << 0 << '\n';
-        return 0;
-    }
-
     int arr[100001] = {0};
+    arr[N] = 1;
 
     queue<int> q;
     q.push(N);
@@ -27,7 +22,7 @@ int main()
         int num = q.front();
         q.pop();
 
-        if (num != 0)
+        if (num - 1 >= 0)
         {
             if (arr[num - 1] == 0 || arr[num - 1] > arr[num] + 1)
             {
@@ -36,7 +31,7 @@ int main()
             }
         }
 
-        if (num != 100000)
+        if (num + 1 <= 100000)
         {
             if (arr[num + 1] == 0 || arr[num + 1] > arr[num] + 1)
             {
@@ -45,7 +40,7 @@ int main()
             }
         }
 
-        if (num <= 50000)
+        if (num * 2 <= 100000)
         {
             if (arr[num * 2] == 0 || arr[num * 2] > arr[num] + 1)
             {
@@ -55,7 +50,7 @@ int main()
         }
     }
 
-    cout << arr[K] << '\n';
+    cout << arr[K] - 1 << '\n';
 
     return 0;
 }
